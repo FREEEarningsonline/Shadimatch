@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shadi Match Pro - Premium Rishta App</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root { --pink: #ff2e63; --gold: #ffd700; --blue: #0095f6; --dark: #252a34; --light: #f8f9fa; }
+        body { font-family: 'Poppins', sans-serif; background: var(--light); margin: 0; padding-top: 70px; padding-bottom: 90px; color: #333; overflow-x: hidden; }
+        
+        /* Header & Navigation */
+        header { position: fixed; top: 0; width: 100%; background: #fff; height: 65px; display: flex; align-items: center; justify-content: space-between; padding: 0 15px; box-sizing: border-box; box-shadow: 0 4px 12px rgba(0,0,0,0.08); z-index: 1000; }
+        .logo { font-size: 22px; font-weight: 800; color: var(--pink); }
+        .logo span { color: var(--gold); }
+        .header-icons i { font-size: 22px; color: #444; margin-left: 15px; cursor: pointer; }
+
+        footer { position: fixed; bottom: 0; width: 100%; background: #fff; display: flex; justify-content: space-around; padding: 12px 0; border-top: 1px solid #eee; z-index: 1000; box-shadow: 0 -4px 15px rgba(0,0,0,0.05); }
+        .nav-item { text-align: center; color: #888; font-size: 11px; cursor: pointer; flex: 1; transition: 0.3s; }
+        .nav-item i { font-size: 22px; display: block; margin-bottom: 4px; }
+        .nav-item.active { color: var(--pink); font-weight: bold; }
+
+        /* Sections */
+        .section { display: none; padding: 15px; max-width: 700px; margin: auto; animation: fadeIn 0.4s; }
+        .section.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .hidden { display: none; }
+
+        /* Forms Styling */
+        .form-group { background: #fff; padding: 25px; border-radius: 20px; margin-bottom: 25px; box-shadow: 0 5px 20px rgba(0,0,0,0.05); }
+        .form-section-title { font-size: 16px; font-weight: 600; color: var(--pink); margin-bottom: 15px; border-bottom: 1px solid #eee; padding-bottom: 5px; margin-top: 20px; }
+        input, textarea, select { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #ddd; border-radius: 10px; box-sizing: border-box; font-size: 14px; background: #fafafa; }
+        label { font-size: 12px; font-weight: bold; color: #666; display: block; margin-top: 5px; }
+
+        .btn { padding: 14px; border-radius: 12px; border: none; font-weight: 600; cursor: pointer; width: 100%; margin-top: 10px; transition: 0.3s; }
+        .btn-main { background: var(--pink); color: #fff; }
+        .btn-verify { background: var(--gold); color: #000; }
+        .btn-outline { background: #eee; color: #444; border: 1px solid #ddd; }
+
+        /* Rishta Card Styling */
+        .card { background: #fff; border-radius: 25px; overflow: hidden; margin-bottom: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); position: relative; }
+        .card img { width: 100%; height: 400px; object-fit: cover; }
+        .v-badge { position: absolute; top: 15px; right: 15px; background: var(--blue); color: #fff; padding: 6px 12px; border-radius: 30px; font-size: 11px; font-weight: bold; z-index: 5; }
+        .card-body { padding: 25px; }
+        .card-section { margin-bottom: 15px; padding-bottom: 10px; border-bottom: 1px dashed #eee; }
+        .card-section h4 { color: var(--pink); font-size: 15px; margin-bottom: 8px; display: flex; align-items: center; }
+        .row { display: flex; margin: 4px 0; font-size: 14px; }
+        .row b { color: #555; width: 45%; flex-shrink: 0; }
+        .row span { color: #222; font-weight: 500; }
+
+        /* Chat Window */
+        #chatOverlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #fff; z-index: 2000; display: none; flex-direction: column; }
+        .chat-header { background: var(--pink); color: white; padding: 15px; display: flex; align-items: center; font-weight: 600; }
+        #chatMessages { flex: 1; padding: 15px; overflow-y: auto; background: #f0f2f5; display: flex; flex-direction: column; }
+        .msg { max-width: 80%; padding: 10px 15px; border-radius: 15px; margin-bottom: 10px; font-size: 14px; }
+        .msg.sent { background: #dcf8c6; align-self: flex-end; border-bottom-right-radius: 2px; }
+        .msg.received { background: #fff; align-self: flex-start; border-bottom-left-radius: 2px; }
+        .chat-input { padding: 10px; display: flex; background: #fff; border-top: 1px solid #eee; }
+        .chat-input input { flex: 1; border: 1px solid #ddd; border-radius: 25px; padding: 12px; margin: 0 10px; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo">Shadi<span>Match</span></div>
+        <div class="header-icons">
+            <i class="fas fa-certificate" id="headerVerify" style="color: var(--blue); display:none;" title="Verified User"></i>
+            <i class="fas fa-user-circle" onclick="showSection('profile')" title="My Profile"></i>
+            <i class="fas fa-sign-out-alt" onclick="logoutUser()" title="Logout"></i>
+        </div>
+    </header>
+
+    <!-- 1. EXPLORE -->
+    <div id="explore" class="section active">
+        <h2 style="font-weight: 800; margin-bottom: 20px;">Find Your Soulmate</h2>
+        <div id="exploreList"></div>
+        <div id="loadMoreContainer" class="hidden" style="text-align: center; margin-top: 20px;">
+            <button class="btn btn-outline" id="loadMoreBtn" onclick="increaseLimit()" style="width: auto; padding: 10px 30px;">Show More Profiles</button>
+        </div>
+    </div>
+
+    <!-- 2. INBOX -->
+    <div id="requests" class="section">
+        <h2>Inbox</h2>
+        <div id="pendingList"></div>
+        <hr>
+        <h3>Approved Chats</h3>
+        <div id="approvedList"></div>
+    </div>
+
+    <!-- 3. MATCHES -->
+    <div id="match" class="section">
+        <h2>💞 Success Matches</h2>
+        <div id="matchList"></div>
+    </div>
+
+    <!-- 4. PROFILE FORM -->
+    <div id="profile" class="section">
+        <div id="authView" class="form-group" style="text-align: center;">
+            <h3>Start Your Journey</h3>
+            <input type="email" id="email" placeholder="Email">
+            <input type="password" id="pass" placeholder="Password">
+            <button class="btn btn-main" onclick="handleAuth('login')">Login</button>
+            <button class="btn btn-outline" onclick="handleAuth('signup')">Create Account</button>
+        </div>
+
+        <div id="profileEditView" class="hidden">
+            <div class="form-group">
+                <h3>Detailed Profile Form</h3>
+                
+                <div class="form-section-title">Basic Information</div>
+                <input type="text" id="pName" placeholder="Full Name (Required)" required>
+                <input type="number" id="pAge" placeholder="Age (Required)" required>
+                <select id="pGender"><option value="">Gender</option><option value="Male">Male</option><option value="Female">Female</option></select>
+                <select id="pMarital"><option value="">Status</option><option value="Single">Single</option><option value="Divorced">Divorced</option><option value="Widow">Widow</option></select>
+                <input type="text" id="pCity" placeholder="City / Location">
+
+                <div class="form-section-title">Family Details</div>
+                <input type="text" id="fName" placeholder="Father's Name">
+                <input type="text" id="fOcc" placeholder="Father's Occupation">
+                <input type="text" id="mName" placeholder="Mother's Name">
+                <input type="number" id="siblings" placeholder="No. of Siblings">
+                <select id="fType"><option value="">Family Type</option><option value="Joint">Joint</option><option value="Nuclear">Nuclear</option></select>
+
+                <div class="form-section-title">Education & Career</div>
+                <input type="text" id="pEdu" placeholder="Education Level">
+                <input type="text" id="pStudy" placeholder="Field of Study">
+                <input type="text" id="pProf" placeholder="Profession">
+                <select id="pEmp"><option value="">Status</option><option value="Employed">Employed</option><option value="Business">Business</option><option value="Student">Student</option></select>
+                <input type="text" id="pIncome" placeholder="Monthly Income">
+
+                <div class="form-section-title">Personal Details</div>
+                <input type="text" id="pHeight" placeholder="Height (e.g. 5.8 ft)">
+                <input type="text" id="pWeight" placeholder="Weight">
+                <input type="text" id="pReligion" placeholder="Religion">
+                <input type="text" id="pSect" placeholder="Sect">
+                <input type="text" id="pCaste" placeholder="Caste">
+
+                <div class="form-section-title">Lifestyle & Media</div>
+                <input type="text" id="pHobbies" placeholder="Hobbies">
+                <input type="text" id="pSkills" placeholder="Skills">
+                <input type="text" id="pLang" placeholder="Languages">
+                <select id="pSmoke"><option value="">Smoking?</option><option value="Yes">Yes</option><option value="No">No</option></select>
+                <input type="text" id="pArea" placeholder="Custom Area/Society">
+                <select id="pRelocate"><option value="">Relocate?</option><option value="Yes">Yes</option><option value="No">No</option></select>
+                
+                <label>Profile Image (URL or Upload):</label>
+                <input type="text" id="pImageUrl" placeholder="Paste Image URL">
+                <input type="file" id="pFile" accept="image/*">
+
+                <div class="form-section-title">Partner Preference</div>
+                <input type="text" id="prefAge" placeholder="Preferred Age">
+                <input type="text" id="prefCity" placeholder="Preferred City">
+                <input type="text" id="prefEdu" placeholder="Preferred Education">
+
+                <button class="btn btn-main" onclick="saveProfile()" style="margin-top:20px;">Publish Profile</button>
+                <button class="btn" style="color:red; background:#fdeaea;" onclick="deleteProfile()">Delete My Profile</button>
+            </div>
+
+            <!-- Verification System -->
+            <div class="form-group" style="border: 2px dashed var(--gold);">
+                <h4 style="color:#b8860b;">Apply for Blue Tick (3 Photos)</h4>
+                <label>CNIC Front:</label><input type="file" id="cnicFront" accept="image/*">
+                <label>CNIC Back:</label><input type="file" id="cnicBack" accept="image/*">
+                <label>Selfie:</label><input type="file" id="selfieImg" accept="image/*">
+                <button class="btn btn-verify" id="vBtn" onclick="applyVerification()">Submit Docs</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Chat Overlay -->
+    <div id="chatOverlay">
+        <div class="chat-header"><i class="fas fa-arrow-left" onclick="closeChat()"></i>&nbsp;&nbsp;<span id="chatUserName">User</span></div>
+        <div id="chatMessages"></div>
+        <div class="chat-input">
+            <input type="text" id="chatInput" placeholder="Type message...">
+            <button class="btn btn-main" style="width:50px; margin:0;" onclick="sendMessage()"><i class="fas fa-paper-plane"></i></button>
+        </div>
+    </div>
+
+    <footer>
+        <div class="nav-item active" onclick="showSection('explore', this)"><i class="fas fa-search"></i>Explore</div>
+        <div class="nav-item" onclick="showSection('requests', this)"><i class="fas fa-heart"></i>Inbox</div>
+        <div class="nav-item" onclick="showSection('match', this)"><i class="fas fa-ring"></i>Match</div>
+        <div class="nav-item" onclick="showSection('profile', this)"><i class="fas fa-user-edit"></i>Profile</div>
+    </footer>
+
+    <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
